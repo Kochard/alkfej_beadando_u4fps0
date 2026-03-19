@@ -1,0 +1,6 @@
+### Certificate Store API request collection
+### This file will contain all CRUD request examples later.
+
+### Health check placeholder
+GET http://localhost:5000/health
+Accept: application/json
