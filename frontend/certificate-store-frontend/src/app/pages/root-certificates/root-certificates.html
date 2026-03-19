@@ -1,0 +1,28 @@
+<h2>Root Certificates</h2>
+
+<p><strong>Current page:</strong> {{ pageNumber }}</p>
+<p><strong>Page size:</strong> {{ pageSize }}</p>
+
+@if (errorMessage) {
+  <p style="color: red;">{{ errorMessage }}</p>
+}
+
+@if (certificates.length === 0 && !errorMessage) {
+  <p>No root certificates found.</p>
+} @else {
+  <ul>
+    @for (cert of certificates; track cert.id) {
+      <li>
+        <strong>ID:</strong> {{ cert.id }}<br>
+        <strong>Name:</strong> {{ cert.name }}<br>
+        <strong>Certificate Data:</strong> {{ cert.certificateData }}<br>
+        <strong>Created At:</strong> {{ cert.createdAt }}
+      </li>
+      <hr>
+    }
+  </ul>
+}
+
+<button type="button" (click)="prevPage()" [disabled]="pageNumber === 1">Previous</button>
+<button type="button" (click)="nextPage()">Next</button>
+<button type="button" (click)="reload()">Reload</button>
