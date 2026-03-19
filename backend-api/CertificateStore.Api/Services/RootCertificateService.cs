@@ -1,52 +1,49 @@
+using CertificateStore.Api.Data;
 using CertificateStore.Api.Models;
+using MongoDB.Driver;
 
 namespace CertificateStore.Api.Services;
 
 public class RootCertificateService : IRootCertificateService
 {
-    private static readonly List<RootCertificate> Certificates = new();
+    private readonly MongoDbContext _context;
+
+    public RootCertificateService(MongoDbContext context)
+    {
+        _context = context;
+    }
 
     public List<RootCertificate> GetAll()
     {
-        return Certificates;
+        return _context.RootCertificates.Find(_ => true).ToList();
     }
 
     public RootCertificate? GetById(string id)
     {
-        return Certificates.FirstOrDefault(c => c.Id == id);
+        return _context.RootCertificates.Find(c => c.Id == id).FirstOrDefault();
     }
 
     public RootCertificate Create(RootCertificate certificate)
     {
-        Certificates.Add(certificate);
+        _context.RootCertificates.InsertOne(certificate);
         return certificate;
     }
 
     public RootCertificate? Update(string id, RootCertificate certificate)
     {
-        var existingCertificate = Certificates.FirstOrDefault(c => c.Id == id);
+        var result = _context.RootCertificates.ReplaceOne(
+            c => c.Id == id,
+            certificate);
 
-        if (existingCertificate is null)
-        {
+        if (result.MatchedCount == 0)
             return null;
-        }
 
-        existingCertificate.Name = certificate.Name;
-        existingCertificate.CertificateData = certificate.CertificateData;
-
-        return existingCertificate;
+        return certificate;
     }
 
     public bool Delete(string id)
     {
-        var certificate = Certificates.FirstOrDefault(c => c.Id == id);
-
-        if (certificate is null)
-        {
-            return false;
-        }
-
-        Certificates.Remove(certificate);
-        return true;
+        var result = _context.RootCertificates.DeleteOne(c => c.Id == id);
+        return result.DeletedCount > 0;
     }
 }

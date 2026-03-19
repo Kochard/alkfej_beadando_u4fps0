@@ -1,53 +1,49 @@
+using CertificateStore.Api.Data;
 using CertificateStore.Api.Models;
+using MongoDB.Driver;
 
 namespace CertificateStore.Api.Services;
 
 public class UserCertificateService : IUserCertificateService
 {
-    private static readonly List<UserCertificate> Certificates = new();
+    private readonly MongoDbContext _context;
+
+    public UserCertificateService(MongoDbContext context)
+    {
+        _context = context;
+    }
 
     public List<UserCertificate> GetAll()
     {
-        return Certificates;
+        return _context.UserCertificates.Find(_ => true).ToList();
     }
 
     public UserCertificate? GetById(string id)
     {
-        return Certificates.FirstOrDefault(c => c.Id == id);
+        return _context.UserCertificates.Find(c => c.Id == id).FirstOrDefault();
     }
 
     public UserCertificate Create(UserCertificate certificate)
     {
-        Certificates.Add(certificate);
+        _context.UserCertificates.InsertOne(certificate);
         return certificate;
     }
 
     public UserCertificate? Update(string id, UserCertificate certificate)
     {
-        var existingCertificate = Certificates.FirstOrDefault(c => c.Id == id);
+        var result = _context.UserCertificates.ReplaceOne(
+            c => c.Id == id,
+            certificate);
 
-        if (existingCertificate is null)
-        {
+        if (result.MatchedCount == 0)
             return null;
-        }
 
-        existingCertificate.Username = certificate.Username;
-        existingCertificate.CertificateData = certificate.CertificateData;
-        existingCertificate.RootCertificateId = certificate.RootCertificateId;
-
-        return existingCertificate;
+        return certificate;
     }
 
     public bool Delete(string id)
     {
-        var certificate = Certificates.FirstOrDefault(c => c.Id == id);
-
-        if (certificate is null)
-        {
-            return false;
-        }
-
-        Certificates.Remove(certificate);
-        return true;
+        var result = _context.UserCertificates.DeleteOne(c => c.Id == id);
+        return result.DeletedCount > 0;
     }
 }
