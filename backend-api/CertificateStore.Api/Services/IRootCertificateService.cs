@@ -10,5 +10,7 @@ public interface IRootCertificateService
 
     RootCertificate Create(RootCertificate certificate);
 
+    RootCertificate? Update(string id, RootCertificate certificate);
+
     bool Delete(string id);
 }

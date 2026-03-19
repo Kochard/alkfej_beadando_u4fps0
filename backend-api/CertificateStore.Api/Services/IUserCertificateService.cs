@@ -10,5 +10,7 @@ public interface IUserCertificateService
 
     UserCertificate Create(UserCertificate certificate);
 
+    UserCertificate? Update(string id, UserCertificate certificate);
+
     bool Delete(string id);
 }
