@@ -15,11 +15,6 @@ public class MongoDbContext
     {
         var mongoSettings = settings.Value;
 
-        Console.WriteLine("Mongo ConnectionString: " + mongoSettings.ConnectionString);
-        Console.WriteLine("Mongo DatabaseName: " + mongoSettings.DatabaseName);
-        Console.WriteLine("Mongo RootCertificatesCollectionName: " + mongoSettings.RootCertificatesCollectionName);
-        Console.WriteLine("Mongo UserCertificatesCollectionName: " + mongoSettings.UserCertificatesCollectionName);
-
         var client = new MongoClient(mongoSettings.ConnectionString);
         var database = client.GetDatabase(mongoSettings.DatabaseName);
 

@@ -17,9 +17,14 @@ public class RootCertificatesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<RootCertificate>> GetAll()
+    public ActionResult<List<RootCertificate>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(_rootCertificateService.GetAll());
+        if (pageNumber < 1 || pageSize < 1)
+        {
+            return BadRequest("pageNumber and pageSize must be greater than 0.");
+        }
+
+        return Ok(_rootCertificateService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]

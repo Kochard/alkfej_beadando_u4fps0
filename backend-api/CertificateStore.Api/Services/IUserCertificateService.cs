@@ -4,7 +4,7 @@ namespace CertificateStore.Api.Services;
 
 public interface IUserCertificateService
 {
-    List<UserCertificate> GetAll();
+    List<UserCertificate> GetAll(int pageNumber, int pageSize);
 
     UserCertificate? GetById(string id);
 

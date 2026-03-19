@@ -4,7 +4,7 @@ namespace CertificateStore.Api.Services;
 
 public interface IRootCertificateService
 {
-    List<RootCertificate> GetAll();
+    List<RootCertificate> GetAll(int pageNumber, int pageSize);
 
     RootCertificate? GetById(string id);
 

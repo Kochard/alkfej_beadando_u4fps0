@@ -13,9 +13,13 @@ public class RootCertificateService : IRootCertificateService
         _context = context;
     }
 
-    public List<RootCertificate> GetAll()
+    public List<RootCertificate> GetAll(int pageNumber, int pageSize)
     {
-        return _context.RootCertificates.Find(_ => true).ToList();
+        return _context.RootCertificates
+            .Find(_ => true)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToList();
     }
 
     public RootCertificate? GetById(string id)
@@ -31,12 +35,12 @@ public class RootCertificateService : IRootCertificateService
 
     public RootCertificate? Update(string id, RootCertificate certificate)
     {
-        var result = _context.RootCertificates.ReplaceOne(
-            c => c.Id == id,
-            certificate);
+        var result = _context.RootCertificates.ReplaceOne(c => c.Id == id, certificate);
 
         if (result.MatchedCount == 0)
+        {
             return null;
+        }
 
         return certificate;
     }

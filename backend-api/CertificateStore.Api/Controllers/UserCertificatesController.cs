@@ -17,9 +17,14 @@ public class UserCertificatesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<UserCertificate>> GetAll()
+    public ActionResult<List<UserCertificate>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(_userCertificateService.GetAll());
+        if (pageNumber < 1 || pageSize < 1)
+        {
+            return BadRequest("pageNumber and pageSize must be greater than 0.");
+        }
+
+        return Ok(_userCertificateService.GetAll(pageNumber, pageSize));
     }
 
     [HttpGet("{id}")]

@@ -13,9 +13,13 @@ public class UserCertificateService : IUserCertificateService
         _context = context;
     }
 
-    public List<UserCertificate> GetAll()
+    public List<UserCertificate> GetAll(int pageNumber, int pageSize)
     {
-        return _context.UserCertificates.Find(_ => true).ToList();
+        return _context.UserCertificates
+            .Find(_ => true)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToList();
     }
 
     public UserCertificate? GetById(string id)
@@ -31,12 +35,12 @@ public class UserCertificateService : IUserCertificateService
 
     public UserCertificate? Update(string id, UserCertificate certificate)
     {
-        var result = _context.UserCertificates.ReplaceOne(
-            c => c.Id == id,
-            certificate);
+        var result = _context.UserCertificates.ReplaceOne(c => c.Id == id, certificate);
 
         if (result.MatchedCount == 0)
+        {
             return null;
+        }
 
         return certificate;
     }
