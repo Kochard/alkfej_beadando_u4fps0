@@ -17,7 +17,7 @@ public class MeasurementResultsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<MeasurementResult>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public ActionResult<PagedResult<MeasurementResult>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1)
     {
         if (pageNumber < 1 || pageSize < 1)
         {

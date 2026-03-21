@@ -1,0 +1,40 @@
+<h2>Edit Measurement Result</h2>
+
+<p *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</p>
+
+<div *ngIf="!isReady">Loading current data...</div>
+
+<form *ngIf="isReady" (ngSubmit)="updateResult()">
+  <label>Part Name:</label><br>
+  <input type="text" [(ngModel)]="formData.partName" name="partName"><br><br>
+
+  <label>Serial Number:</label><br>
+  <input type="text" [(ngModel)]="formData.serialNumber" name="serialNumber"><br><br>
+
+  <label>Measurement Type:</label><br>
+  <input type="text" [(ngModel)]="formData.measurementType" name="measurementType"><br><br>
+
+  <label>Measured Value:</label><br>
+  <input type="number" [(ngModel)]="formData.measuredValue" name="measuredValue"><br><br>
+
+  <label>Unit:</label><br>
+  <input type="text" [(ngModel)]="formData.unit" name="unit"><br><br>
+
+  <label>Lower Limit:</label><br>
+  <input type="number" [(ngModel)]="formData.lowerLimit" name="lowerLimit"><br><br>
+
+  <label>Upper Limit:</label><br>
+  <input type="number" [(ngModel)]="formData.upperLimit" name="upperLimit"><br><br>
+
+  <label>Measured By:</label><br>
+  <input type="text" [(ngModel)]="formData.measuredBy" name="measuredBy"><br><br>
+
+  <label>Measured At:</label><br>
+  <input type="datetime-local" [(ngModel)]="formData.measuredAt" name="measuredAt"><br><br>
+
+  <label>Notes:</label><br>
+  <textarea [(ngModel)]="formData.notes" name="notes"></textarea><br><br>
+
+  <button type="submit">Save Changes</button>
+  <button type="button" (click)="cancel()">Cancel</button>
+</form>

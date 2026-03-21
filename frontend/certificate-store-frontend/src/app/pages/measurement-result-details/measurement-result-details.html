@@ -1,0 +1,39 @@
+<h2>Measurement Result Details</h2>
+
+<p *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</p>
+
+<div *ngIf="result">
+  <p><strong>ID:</strong> {{ result.id }}</p>
+  <p><strong>Part Name:</strong> {{ result.partName }}</p>
+  <p><strong>Serial Number:</strong> {{ result.serialNumber }}</p>
+  <p><strong>Measurement Type:</strong> {{ result.measurementType }}</p>
+
+  <p>
+    <strong>Measured Value:</strong>
+    {{ result.measuredValue }} {{ result.unit }}
+  </p>
+
+  <p><strong>Lower Limit:</strong> {{ result.lowerLimit }}</p>
+  <p><strong>Upper Limit:</strong> {{ result.upperLimit }}</p>
+
+  <p>
+    <strong>Status:</strong>
+    <span [ngStyle]="{
+      color: (result.measuredValue >= result.lowerLimit && result.measuredValue <= result.upperLimit) ? 'green' : 'red',
+      'font-weight': 'bold'
+    }">
+      {{ (result.measuredValue >= result.lowerLimit && result.measuredValue <= result.upperLimit) ? 'PASS' : 'NG' }}
+    </span>
+  </p>
+
+  <p><strong>Measured By:</strong> {{ result.measuredBy }}</p>
+
+  <p>
+    <strong>Measured At:</strong>
+    {{ result.measuredAt | date:'yyyy-MM-dd HH:mm:ss' }}
+  </p>
+
+  <p><strong>Notes:</strong> {{ result.notes }}</p>
+
+  <a [routerLink]="['/measurement-results', result.id, 'edit']">Edit</a>
+</div>

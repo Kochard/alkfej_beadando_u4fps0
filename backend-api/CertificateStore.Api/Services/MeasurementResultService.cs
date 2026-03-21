@@ -13,13 +13,29 @@ public class MeasurementResultService : IMeasurementResultService
         _context = context;
     }
 
-    public List<MeasurementResult> GetAll(int pageNumber, int pageSize)
+    public PagedResult<MeasurementResult> GetAll(int pageNumber, int pageSize)
     {
-        return _context.MeasurementResults
+        var totalCount = (int)_context.MeasurementResults.CountDocuments(_ => true);
+
+        var items = _context.MeasurementResults
             .Find(_ => true)
+            .SortByDescending(r => r.MeasuredAt)
             .Skip((pageNumber - 1) * pageSize)
             .Limit(pageSize)
             .ToList();
+
+        var totalPages = totalCount == 0
+            ? 1
+            : (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        return new PagedResult<MeasurementResult>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
 
     public MeasurementResult? GetById(string id)

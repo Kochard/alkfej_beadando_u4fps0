@@ -4,7 +4,7 @@ namespace CertificateStore.Api.Services;
 
 public interface IMeasurementResultService
 {
-    List<MeasurementResult> GetAll(int pageNumber, int pageSize);
+    PagedResult<MeasurementResult> GetAll(int pageNumber, int pageSize);
 
     MeasurementResult? GetById(string id);
 

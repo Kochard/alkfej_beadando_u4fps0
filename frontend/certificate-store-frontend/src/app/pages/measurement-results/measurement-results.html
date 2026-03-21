@@ -1,34 +1,60 @@
 <h2>Measurement Results</h2>
 
 <p><strong>Current page:</strong> {{ pageNumber }}</p>
-<p><strong>Page size:</strong> {{ pageSize }}</p>
+<p><strong>Total pages:</strong> {{ totalPages }}</p>
+<p><strong>Total results:</strong> {{ totalCount }}</p>
 
-@if (errorMessage) {
-  <p style="color: red;">{{ errorMessage }}</p>
-}
+<div *ngIf="isLoading">Loading data...</div>
+<div *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</div>
 
-@if (results.length === 0 && !errorMessage) {
-  <p>No measurement results found.</p>
-} @else {
-  <ul>
-    @for (result of results; track result.id) {
-      <li>
-        <strong>ID:</strong> {{ result.id }}<br>
-        <strong>Part Name:</strong> {{ result.partName }}<br>
-        <strong>Serial Number:</strong> {{ result.serialNumber }}<br>
-        <strong>Measurement Type:</strong> {{ result.measurementType }}<br>
-        <strong>Measured Value:</strong> {{ result.measuredValue }} {{ result.unit }}<br>
-        <strong>Limits:</strong> {{ result.lowerLimit }} - {{ result.upperLimit }} {{ result.unit }}<br>
-        <strong>Status:</strong> {{ result.status }}<br>
-        <strong>Measured By:</strong> {{ result.measuredBy }}<br>
-        <strong>Measured At:</strong> {{ result.measuredAt }}<br>
-        <strong>Notes:</strong> {{ result.notes }}
-      </li>
-      <hr>
-    }
-  </ul>
-}
+<div *ngIf="!isLoading && results.length === 0">
+  No measurement results found.
+</div>
 
+<div *ngIf="!isLoading && results.length > 0">
+  <div *ngFor="let result of results" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+
+    <div><strong>Part Name:</strong> {{ result.partName }}</div>
+    <div><strong>Serial Number:</strong> {{ result.serialNumber }}</div>
+    <div><strong>Measurement Type:</strong> {{ result.measurementType }}</div>
+    <div><strong>Lower Limit:</strong> {{ result.lowerLimit }}</div>
+    <div><strong>Upper Limit:</strong> {{ result.upperLimit }}</div>
+    <div><strong>Measured Value:</strong> {{ result.measuredValue }} {{ result.unit }}</div>
+
+    <div>
+      <strong>Status:</strong>
+      <span [ngStyle]="{
+        color: getStatus(result) === 'PASS' ? 'green' : 'red',
+        'font-weight': 'bold'
+      }">
+        {{ getStatus(result) }}
+      </span>
+    </div>
+
+    <div><strong>Measured By:</strong> {{ result.measuredBy }}</div>
+    <div><strong>Measured At:</strong> {{ result.measuredAt | date:'yyyy-MM-dd HH:mm:ss' }}</div>
+    <div><strong>Notes:</strong> {{ result.notes }}</div>
+
+    <div style="margin-top:8px;">
+      
+      <!-- EDIT (FIXED) -->
+      <button
+        [routerLink]="['/measurement-results', result.id, 'edit']"
+        [queryParams]="{ page: pageNumber }">
+        Edit
+      </button>
+
+      <!-- DELETE -->
+      <button type="button" (click)="deleteResult(result.id)">
+        Delete
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<button type="button" (click)="firstPage()" [disabled]="pageNumber === 1"><<</button>
 <button type="button" (click)="prevPage()" [disabled]="pageNumber === 1">Previous</button>
-<button type="button" (click)="nextPage()">Next</button>
-<button type="button" (click)="reload()">Reload</button>
+<button type="button" (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+<button type="button" (click)="lastPage()" [disabled]="pageNumber === totalPages">>></button>
+<button type="button" (click)="reload()" [disabled]="isLoading">Reload</button>

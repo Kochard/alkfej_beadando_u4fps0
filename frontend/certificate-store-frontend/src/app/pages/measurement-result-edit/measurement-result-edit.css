@@ -1,0 +1,9 @@
+input,
+textarea {
+  width: 320px;
+  padding: 8px;
+}
+
+button {
+  padding: 8px 16px;
+}
