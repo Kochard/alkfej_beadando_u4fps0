@@ -1,4 +1,4 @@
-# Certificate Store E2E Project
+# Measurement Results Manager
 
 This project is a full end-to-end application and deployment solution built for coursework.
 
@@ -26,17 +26,21 @@ This project is a full end-to-end application and deployment solution built for 
 
 ## Main functional domain
 
-X.509 Certificate Store
+Measurement Results Manager
 
 Main planned operations:
 
-- create root certificate
-- list root certificates
-- delete root certificate
-- store user certificate
-- list user certificates
-- delete user certificate
-- sign uploaded CSR
+- create measurement result
+- list measurement results
+- get measurement result by id
+- update measurement result
+- delete measurement result
+- paginate measurement results
+
+## Example business use
+
+The application stores production or quality inspection measurement results.
+Users can upload or manually enter a result, review it later, modify it, or remove it.
 
 ## Documentation
 

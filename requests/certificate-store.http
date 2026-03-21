@@ -1,77 +1,54 @@
-### Root Certificates - Get all
-GET http://localhost:5202/api/RootCertificates
+### Measurement Results - Get all with pagination
+GET http://localhost:5202/api/MeasurementResults?pageNumber=1&pageSize=10
 Accept: application/json
 
 ###
 
-### Root Certificates - Get by id
-GET http://localhost:5202/api/RootCertificates/14193eb9-2e68-4282-b1cd-fccacfe46663
+### Measurement Results - Get by id
+GET http://localhost:5202/api/MeasurementResults/REPLACE_WITH_RESULT_ID
 Accept: application/json
 
 ###
 
-### Root Certificates - Create
-POST http://localhost:5202/api/RootCertificates
+### Measurement Results - Create
+POST http://localhost:5202/api/MeasurementResults
 Content-Type: application/json
 
 {
-  "name": "Test Root CA",
-  "certificateData": "TEST_ROOT_CERT"
+  "partName": "Rear Cover",
+  "serialNumber": "SN-10001",
+  "measurementType": "Length",
+  "measuredValue": 125.4,
+  "unit": "mm",
+  "lowerLimit": 120.0,
+  "upperLimit": 130.0,
+  "status": "PASS",
+  "measuredBy": "Operator A",
+  "measuredAt": "2026-03-20T08:30:00Z",
+  "notes": "Initial sample result"
 }
 
 ###
 
-### Root Certificates - Update
-PUT http://localhost:5202/api/RootCertificates/14193eb9-2e68-4282-b1cd-fccacfe46663
+### Measurement Results - Update
+PUT http://localhost:5202/api/MeasurementResults/REPLACE_WITH_RESULT_ID
 Content-Type: application/json
 
 {
-  "name": "Updated Root CA",
-  "certificateData": "UPDATED_ROOT_CERT"
+  "partName": "Rear Cover",
+  "serialNumber": "SN-10001",
+  "measurementType": "Length",
+  "measuredValue": 118.9,
+  "unit": "mm",
+  "lowerLimit": 120.0,
+  "upperLimit": 130.0,
+  "status": "FAIL",
+  "measuredBy": "Operator B",
+  "measuredAt": "2026-03-20T09:15:00Z",
+  "notes": "Updated after recheck"
 }
 
 ###
 
-### Root Certificates - Delete
-DELETE http://localhost:5202/api/RootCertificates/14193eb9-2e68-4282-b1cd-fccacfe46663
-
-###
-
-### User Certificates - Get all
-GET http://localhost:5202/api/UserCertificates
-Accept: application/json
-
-###
-
-### User Certificates - Get by id
-GET http://localhost:5202/api/UserCertificates/c3ee10f0-95ae-4410-8e42-2092beeca2de
-Accept: application/json
-
-###
-
-### User Certificates - Create
-POST http://localhost:5202/api/UserCertificates
-Content-Type: application/json
-
-{
-  "username": "u4fps0",
-  "certificateData": "TEST_USER_CERT",
-  "rootCertificateId": "42593ba2-52d4-403d-bd0f-5407fea35ff9"
-}
-
-###
-
-### User Certificates - Update
-PUT http://localhost:5202/api/UserCertificates/c3ee10f0-95ae-4410-8e42-2092beeca2de
-Content-Type: application/json
-
-{
-  "username": "updated-grandma-user",
-  "certificateData": "UPDATED_USER_CERT",
-  "rootCertificateId": "42593ba2-52d4-403d-bd0f-5407fea35ff9"
-}
-
-###
-
-### User Certificates - Delete
-DELETE http://localhost:5202/api/UserCertificates/c3ee10f0-95ae-4410-8e42-2092beeca2de
+### Measurement Results - Delete
+DELETE http://localhost:5202/api/MeasurementResults/REPLACE_WITH_RESULT_ID

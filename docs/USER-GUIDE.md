@@ -1,13 +1,16 @@
 # User Guide
 
-This file will describe how to use the Certificate Store application.
+This file will describe how to use the Measurement Results Manager application.
 
 Planned sections:
 
 1. Overview
-2. Application pages
-3. Root certificate operations
-4. User certificate operations
-5. Pagination usage
-6. Error handling
-7. Example usage flow
+2. Homepage and navigation
+3. Measurement results list
+4. Create new measurement result
+5. View result details
+6. Edit result
+7. Delete result
+8. Pagination usage
+9. Error handling
+10. Example usage flow

@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { CertificateService } from '../../services/certificate.service';
 
 @Component({
-  selector: 'app-user-certificates',
+  selector: 'app-measurement-results',
   imports: [CommonModule],
-  templateUrl: './user-certificates.html',
-  styleUrl: './user-certificates.css'
+  templateUrl: './measurement-results.html',
+  styleUrl: './measurement-results.css'
 })
-export class UserCertificatesComponent implements OnInit {
+export class MeasurementResultsComponent implements OnInit {
 
-  certificates: any[] = [];
+  results: any[] = [];
   pageNumber = 1;
   pageSize = 5;
   errorMessage = '';
@@ -18,38 +18,38 @@ export class UserCertificatesComponent implements OnInit {
   constructor(private certificateService: CertificateService) {}
 
   ngOnInit(): void {
-    this.loadCertificates();
+    this.loadResults();
   }
 
-  loadCertificates() {
+  loadResults() {
     this.errorMessage = '';
 
     this.certificateService
-      .getUserCertificates(this.pageNumber, this.pageSize)
+      .getMeasurementResults(this.pageNumber, this.pageSize)
       .subscribe({
         next: (data) => {
-          this.certificates = data;
+          this.results = data;
         },
         error: () => {
-          this.errorMessage = 'Failed to load user certificates from backend.';
-          this.certificates = [];
+          this.errorMessage = 'Failed to load measurement results from backend.';
+          this.results = [];
         }
       });
   }
 
   nextPage() {
     this.pageNumber++;
-    this.loadCertificates();
+    this.loadResults();
   }
 
   prevPage() {
     if (this.pageNumber > 1) {
       this.pageNumber--;
-      this.loadCertificates();
+      this.loadResults();
     }
   }
 
   reload() {
-    this.loadCertificates();
+    this.loadResults();
   }
 }

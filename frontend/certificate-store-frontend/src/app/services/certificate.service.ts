@@ -7,15 +7,11 @@ import { Observable } from 'rxjs';
 })
 export class CertificateService {
 
-  private baseUrl = 'http://localhost:5202/api';
+  private baseUrl = 'http://localhost:5202/api/MeasurementResults';
 
   constructor(private http: HttpClient) {}
 
-  getRootCertificates(pageNumber: number, pageSize: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/RootCertificates?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-  }
-
-  getUserCertificates(pageNumber: number, pageSize: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/UserCertificates?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  getMeasurementResults(pageNumber: number, pageSize: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   }
 }

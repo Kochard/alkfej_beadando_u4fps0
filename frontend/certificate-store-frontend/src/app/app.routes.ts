@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
-import { RootCertificatesComponent } from './pages/root-certificates/root-certificates';
-import { UserCertificatesComponent } from './pages/user-certificates/user-certificates';
+import { HomeComponent } from './pages/home/home';
+import { MeasurementResultsComponent } from './pages/measurement-results/measurement-results';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'root-certificates', pathMatch: 'full' },
-  { path: 'root-certificates', component: RootCertificatesComponent },
-  { path: 'user-certificates', component: UserCertificatesComponent }
+  { path: '', component: HomeComponent },
+  { path: 'measurement-results', component: MeasurementResultsComponent }
 ];

@@ -7,9 +7,7 @@ namespace CertificateStore.Api.Data;
 
 public class MongoDbContext
 {
-    public IMongoCollection<RootCertificate> RootCertificates { get; }
-
-    public IMongoCollection<UserCertificate> UserCertificates { get; }
+    public IMongoCollection<MeasurementResult> MeasurementResults { get; }
 
     public MongoDbContext(IOptions<MongoDbSettings> settings)
     {
@@ -18,10 +16,7 @@ public class MongoDbContext
         var client = new MongoClient(mongoSettings.ConnectionString);
         var database = client.GetDatabase(mongoSettings.DatabaseName);
 
-        RootCertificates = database.GetCollection<RootCertificate>(
-            mongoSettings.RootCertificatesCollectionName);
-
-        UserCertificates = database.GetCollection<UserCertificate>(
-            mongoSettings.UserCertificatesCollectionName);
+        MeasurementResults = database.GetCollection<MeasurementResult>(
+            mongoSettings.MeasurementResultsCollectionName);
     }
 }

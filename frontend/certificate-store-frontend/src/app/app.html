@@ -1,10 +1,21 @@
-<h1>Certificate Store</h1>
+<div class="layout">
+  <aside class="sidebar">
+    <h2>MRM</h2>
+    <nav>
+      <ul>
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/measurement-results">Measurement Results</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-<nav style="margin-bottom: 20px;">
-  <a routerLink="/root-certificates">Root Certificates</a> |
-  <a routerLink="/user-certificates">User Certificates</a>
-</nav>
+  <main class="content">
+    <header class="header">
+      <h1>Measurement Results Manager</h1>
+    </header>
 
-<hr>
-
-<router-outlet></router-outlet>
+    <section class="page-content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

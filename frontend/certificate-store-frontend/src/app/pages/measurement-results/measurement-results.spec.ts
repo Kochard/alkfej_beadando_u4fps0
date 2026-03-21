@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RootCertificates } from './root-certificates';
+import { MeasurementResults } from './measurement-results';
 
-describe('RootCertificates', () => {
-  let component: RootCertificates;
-  let fixture: ComponentFixture<RootCertificates>;
+describe('MeasurementResults', () => {
+  let component: MeasurementResults;
+  let fixture: ComponentFixture<MeasurementResults>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RootCertificates],
+      imports: [MeasurementResults],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RootCertificates);
+    fixture = TestBed.createComponent(MeasurementResults);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

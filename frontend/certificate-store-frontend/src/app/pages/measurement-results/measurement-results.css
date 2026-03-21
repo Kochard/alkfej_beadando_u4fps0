@@ -1,0 +1,16 @@
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+button {
+  margin-right: 10px;
+}
