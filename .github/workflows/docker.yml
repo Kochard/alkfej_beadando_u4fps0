@@ -1,0 +1,34 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build backend
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/backend:latest ./backend-api/CertificateStore.Api
+          docker push ghcr.io/${{ github.repository }}/backend:latest
+
+      - name: Build frontend
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/frontend:latest ./frontend/certificate-store-frontend
+          docker push ghcr.io/${{ github.repository }}/frontend:latest
