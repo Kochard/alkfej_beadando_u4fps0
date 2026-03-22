@@ -2,7 +2,11 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -13,22 +17,22 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build backend
+      - name: Build and push backend image
         run: |
           docker build -t ghcr.io/${{ github.repository }}/backend:latest ./backend-api/CertificateStore.Api
           docker push ghcr.io/${{ github.repository }}/backend:latest
 
-      - name: Build frontend
+      - name: Build and push frontend image
         run: |
           docker build -t ghcr.io/${{ github.repository }}/frontend:latest ./frontend/certificate-store-frontend
           docker push ghcr.io/${{ github.repository }}/frontend:latest
