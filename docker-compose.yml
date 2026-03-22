@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: measurement-results-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend-api/CertificateStore.Api
+    container_name: measurement-results-backend
+    depends_on:
+      - mongo
+    ports:
+      - "5202:8080"
+
+  frontend:
+    build:
+      context: ./frontend/certificate-store-frontend
+    container_name: measurement-results-frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
+volumes:
+  mongo_data:
