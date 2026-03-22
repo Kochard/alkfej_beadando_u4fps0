@@ -1,90 +1,112 @@
-# Full-Stack Measurement Results Application
+# Measurement Results Application
 
 ## Overview
 
-This project is a full-stack application with:
+Full-stack application with end-to-end deployment pipeline.
+
+Stack:
 
 - Frontend: Angular
-- Backend: .NET Web API
+- Backend: ASP.NET Web API
 - Database: MongoDB
 - Containerization: Docker
+- CI: GitHub Actions
+- Registry: GitHub Container Registry (GHCR)
 - Deployment: Kubernetes
-- CI/CD: GitHub Actions + GHCR
+- CD: Argo CD
 
 ---
 
-## Requirements
+## Features
 
-Install:
-
-- Docker Desktop (with Kubernetes enabled)
-- Git
-- Node.js (only if running locally without Docker)
+- Create measurement results
+- Edit measurement results
+- Delete measurement results
+- Paginated list view
+- RESTful API
+- Persistent storage (MongoDB)
 
 ---
 
-## Clone Repository
+## Architecture
 
-```bash
-git clone https://github.com/Kochard/alkfej_beadando_u4fps0.git
-cd alkfej_beadando_u4fps0
-Run with Kubernetes
-1. Enable Kubernetes
+Frontend → Nginx → Backend → MongoDB
 
-In Docker Desktop:
+- Frontend served by Nginx
+- Nginx proxies `/api` requests to backend
+- Backend communicates with MongoDB
+- MongoDB uses PersistentVolumeClaim in Kubernetes
 
-Settings → Kubernetes → Enable Kubernetes
-2. Apply manifests
-kubectl apply -f k8s/
-3. Verify pods
-kubectl get pods
+---
 
-All should be:
+## Repository Structure
 
-Running
-4. Access application
+- `frontend/` → Angular app
+- `backend-api/` → .NET API
+- `k8s/` → Kubernetes manifests
+- `docs/` → user and deployment guides
+
+---
+
+## Docker Images
+
+Stored in GHCR:
+
+- Backend  
+  `ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest`
+
+- Frontend  
+  `ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest`
+
+---
+
+## CI Pipeline
+
+GitHub Actions:
+
+- builds frontend and backend images
+- pushes images to GHCR
+- runs automatically on push to `main`
+
+---
+
+## Deployment (Kubernetes + Argo CD)
+
+Application is deployed using:
+
+- Kubernetes manifests (`k8s/`)
+- Argo CD for automatic synchronization from Git
+
+Deployment steps are described in:
+
+docs/DEPLOYMENT-GUIDE.md
+
+## Usage
+
+After deployment:
+
+Start port-forward:
+
 kubectl port-forward service/frontend 8080:80
 
 Open:
 
 http://localhost:8080
-Data Persistence
+Use the application:
+create entries
+edit entries
+delete entries
+browse paginated results
+
+## Data Persistence
 
 MongoDB uses a PersistentVolumeClaim:
 
-mongo-pvc
+data survives pod restart
+verified in Kubernetes environment
 
-Data survives:
+## Notes
 
-pod restart
-deployment restart
-Docker Images
-
-Images are hosted on GitHub Container Registry:
-
-Backend:
-
-ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest
-
-Frontend:
-
-ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest
-CI/CD
-
-GitHub Actions automatically:
-
-builds Docker images
-pushes to GHCR
-
-Triggered on push to main.
-
-Architecture
-
-Frontend → Nginx → Backend → MongoDB
-
-Frontend calls /api/...
-Nginx proxies to backend service
-Backend communicates with MongoDB
-Notes
-No external access (local Kubernetes only)
-For production, use Ingress + domain
+Designed for local Kubernetes (Docker Desktop)
+No external ingress configured
+Argo CD manages deployment from Git repository
