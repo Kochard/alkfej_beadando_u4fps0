@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: mcp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: mcp
   template:
     metadata:
       labels:
-        app: backend
+        app: mcp
     spec:
       containers:
-        - name: backend
-          image: ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest
+        - name: mcp
+          image: ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -25,10 +25,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend
+  name: mcp
 spec:
   selector:
-    app: backend
+    app: mcp
   ports:
     - port: 80
       targetPort: 8080

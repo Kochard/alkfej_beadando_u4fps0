@@ -1,0 +1,6 @@
+@CertificateStore.Mcp_HostAddress = http://localhost:5143
+
+GET {{CertificateStore.Mcp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
