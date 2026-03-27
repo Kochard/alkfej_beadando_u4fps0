@@ -1,260 +1,654 @@
-# Deployment Guide - Measurement Results Application
+# Deployment Guide - Measurement Results System
 
-## 1. Overview
+## Table of Contents
 
-This project is deployed on a local Kubernetes cluster and uses:
-
-- Frontend: Angular
-- Backend: ASP.NET Web API
-- Database: MongoDB
-- Container images: GitHub Container Registry (GHCR)
-- Continuous Integration: GitHub Actions
-- Continuous Deployment: Argo CD
-
-The application is deployed from Kubernetes manifests stored in the Git repository.
+1. [Overview](#overview)
+2. [Prerequisites](#prerequisites)
+3. [Architecture](#architecture)
+4. [Quick Start (Docker Compose)](#quick-start-docker-compose)
+5. [Kubernetes Deployment (Local)](#kubernetes-deployment-local)
+6. [Production Deployment (Argo CD)](#production-deployment-argo-cd)
+7. [Advanced Configuration](#advanced-configuration)
+8. [Monitoring & Troubleshooting](#monitoring--troubleshooting)
 
 ---
 
-## 2. Prerequisites
+## Overview
 
-Before deployment, install and prepare the following:
+This project is a full-stack containerized system for managing measurement results with an end-to-end CI/CD pipeline:
 
-- Docker Desktop
-- Kubernetes enabled in Docker Desktop
-- kubectl
-- Git
-- Access to the GitHub repository
+- **Frontend**: Angular 21
+- **Backend**: ASP.NET 10 Web API
+- **Database**: MongoDB 8
+- **Registry**: GitHub Container Registry (GHCR)
+- **CI**: GitHub Actions
+- **Deployment**: Kubernetes
+- **CD**: Argo CD
 
-Optional but recommended:
-- GitHub account with access to GHCR images
+### System Components
 
----
+- **frontend** - Angular application served via Nginx
+- **backend** - ASP.NET Core REST API
+- **mcp** - Additional backend service  
+- **mongo** - MongoDB database with persistent storage
 
-## 3. Repository Structure
+### Repository Structure
 
-Relevant folders and files:
-
-- `k8s/` → Kubernetes manifests
-- `k8s/backend-deployment.yaml`
-- `k8s/frontend-deployment.yaml`
-- `k8s/mongo-deployment.yaml`
-- `k8s/mongo-pvc.yaml`
-- `k8s/argocd-application.yaml`
-- `docs/USER-GUIDE.md`
-- `docs/DEPLOYMENT-GUIDE.md`
-
----
-
-## 4. Container Images
-
-This project uses container images stored in GHCR.
-
-Images:
-
-- Backend  
-  `ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest`
-
-- Frontend  
-  `ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest`
-
-MongoDB uses the official image:
-
-- `mongo:8`
+```
+alkfej_beadando_u4fps0/
+├── frontend/certificate-store-frontend/    # Angular frontend
+├── backend-api/
+│   ├── CertificateStore.Api/               # Main backend API
+│   └── CertificateStore.Mcp/               # MCP service
+├── k8s/                                     # Kubernetes manifests
+├── docker-compose.yml                       # Local development setup
+├── docs/                                    # Documentation
+└── .github/workflows/                       # CI/CD pipeline
+```
 
 ---
 
-## 5. Continuous Integration
+## Prerequisites
 
-GitHub Actions automatically:
+### Required Software
 
-- builds backend image
-- builds frontend image
-- pushes both images to GHCR
+- **Git** - Version control
+- **Docker Desktop** - Container runtime
+- **kubectl** - Kubernetes CLI tool
+- **Kubernetes** - Enabled in Docker Desktop (for local K8s deployment)
+- **Helm** (optional) - Package manager for Kubernetes
 
-The CI pipeline is triggered on push to the `main` branch.
+### Installation Instructions
+
+**Windows (using PowerShell or Command Prompt):**
+
+1. Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+2. Enable Kubernetes in Docker Desktop Settings:
+   - Right-click Docker icon → Settings
+   - Navigate to Kubernetes tab
+   - Check "Enable Kubernetes"
+   - Click "Apply & Restart"
+3. Verify installation:
+
+```bash
+docker --version
+kubectl version --client
+```
+
+### Account Access
+
+- **GitHub Account** - Access to the repository (for CI/CD)
+- **GHCR Access** - Already configured if images are auto-built
 
 ---
 
-## 6. Kubernetes Deployment Files
+## Architecture
 
-The application is deployed with these Kubernetes resources:
+### Network Topology
 
-- MongoDB Deployment + Service
-- MongoDB PersistentVolumeClaim
-- Backend Deployment + Service
-- Frontend Deployment + Service
-- Argo CD Application manifest
+```
+┌─────────────────────────────────────────┐
+│           USER BROWSER                   │
+└──────────────┬──────────────────────────┘
+               │ HTTP
+┌──────────────▼──────────────────────────┐
+│      NGINX (Frontend)                    │
+│  Port 80 (or 30007 in K8s)               │
+└──────────────┬──────────────────────────┘
+               │ /api requests proxied
+┌──────────────▼──────────────────────────┐
+│      ASP.NET Backend API                 │
+│  Port 8080 → 5202 (Docker Compose)      │
+└──────────────┬──────────────────────────┘
+               │ queries
+┌──────────────▼──────────────────────────┐
+│      MongoDB Database                    │
+│  Port 27017                              │
+└──────────────────────────────────────────┘
+```
 
-MongoDB persistence is provided by:
+### Container Images
 
-- `mongo-pvc.yaml`
-
-This ensures MongoDB data survives pod restart.
+| Service  | Image | Source |
+|----------|-------|--------|
+| Backend  | `ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest` | GHCR |
+| Frontend | `ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest` | GHCR |
+| MCP      | `ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest` | GHCR |
+| MongoDB  | `mongo:8.0` | Docker Hub |
 
 ---
 
-## 7. Install Argo CD
+## Quick Start (Docker Compose)
 
-Create the Argo CD namespace:
+### What is Docker Compose?
 
-kubectl create namespace argocd
-Install Argo CD:
+Docker Compose allows you to run all services locally with a single command. Perfect for development and testing.
 
-kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+### Step 1: Clone Repository
 
-Check pods:
+```bash
+cd C:\Users\kovac
+git clone https://github.com/Kochard/alkfej_beadando_u4fps0.git
+cd alkfej_beadando_u4fps0
+```
 
-kubectl get pods -n argocd
+### Step 2: Start Docker Desktop
 
-Wait until Argo CD pods are running.
+1. Open Docker Desktop application
+2. Wait for it to fully load (check the system tray icon)
 
-## 8. Access Argo CD
+### Step 3: Launch Application
 
-Port-forward the Argo CD server:
+```bash
+docker compose up -d
+```
 
-kubectl port-forward svc/argocd-server -n argocd 8090:443
+This will:
+- Pull MongoDB image
+- Build and run frontend service
+- Build and run backend service
+- Create persistent volume for database
 
-Open in browser:
+### Step 4: Access Application
 
-https://localhost:8090
+Open your browser and navigate to:
 
-Because this is a local installation, the browser may show a certificate warning.
+```
+http://localhost:4200
+```
 
-## 9. Get Argo CD Admin Password
+### Service Endpoints
 
-Read the initial admin password secret:
+| Service | Port | URL |
+|---------|------|-----|
+| Frontend | 4200 | http://localhost:4200 |
+| Backend API | 5202 | http://localhost:5202 |
+| MongoDB | 27017 | localhost:27017 |
 
-kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}"
+### Stop Application
 
-Decode it with PowerShell:
+```bash
+docker compose down
+```
 
-powershell -command "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}')))"
+To also remove database data:
 
-Login details:
+```bash
+docker compose down -v
+```
 
-Username: admin
-Password: decoded value
+---
 
-## 10. Deploy the Application with Argo CD
+## Kubernetes Deployment (Local)
 
-Apply the Argo CD Application manifest:
+### What is Kubernetes?
 
-kubectl apply -f k8s/argocd-application.yaml
+Kubernetes is a container orchestration platform. Local deployment is ideal for staging and testing production-like environments.
 
-Check the application:
+### Step 1: Verify Kubernetes is Running
 
-kubectl get applications -n argocd
+```bash
+kubectl cluster-info
+```
 
-The application should become:
+You should see output indicating the cluster is accessible.
 
-Synced
-Healthy
+### Step 2: Create Namespace (Optional but Recommended)
 
-Argo CD will deploy the Kubernetes manifests from the Git repository automatically.
+```bash
+kubectl create namespace measurement-results
+```
 
-## 11. Access the Frontend
+To use this namespace by default:
 
-Port-forward the frontend service:
+```bash
+kubectl config set-context --current --namespace=measurement-results
+```
 
+### Step 3: Deploy MongoDB Persistent Volume
+
+```bash
+kubectl apply -f k8s/mongo-pvc.yaml
+```
+
+Verify the PVC is created:
+
+```bash
+kubectl get pvc
+```
+
+### Step 4: Deploy MongoDB
+
+```bash
+kubectl apply -f k8s/mongo-deployment.yaml
+```
+
+Check MongoDB pod status:
+
+```bash
+kubectl get pods -l app=mongo
+kubectl logs -l app=mongo
+```
+
+Wait for MongoDB to be ready (STATUS = Running):
+
+```bash
+kubectl get pods -w -l app=mongo
+```
+
+### Step 5: Deploy Backend API
+
+```bash
+kubectl apply -f k8s/backend-deployment.yaml
+```
+
+Check backend pod status:
+
+```bash
+kubectl get pods -l app=backend
+kubectl logs -l app=backend
+```
+
+### Step 6: Deploy Frontend
+
+```bash
+kubectl apply -f k8s/frontend-deployment.yaml
+```
+
+Check frontend pod status:
+
+```bash
+kubectl get pods -l app=frontend
+```
+
+### Step 7: Verify All Services
+
+```bash
+kubectl get pods
+kubectl get services
+kubectl get deployments
+```
+
+### Step 8: Access Application
+
+#### Option A: Port Forwarding
+
+```bash
 kubectl port-forward service/frontend 8080:80
+```
 
-Open in browser:
+Open: http://localhost:8080
 
-http://localhost:8080
+#### Option B: NodePort Service
 
-The application should load and allow:
+The frontend service is configured as NodePort (port 30007), accessible at:
 
-creating measurement results
-editing results
-deleting results
-navigating paginated results
+```
+http://localhost:30007
+```
 
-## 12. Verify Backend Access Through Frontend
+### Deploy MCP Service (Optional)
 
-The frontend uses nginx proxy configuration to forward:
+```bash
+kubectl apply -f k8s/mcp-deployment.yaml
+```
 
-/api/...
+### View All Resources
 
-to the backend service inside Kubernetes.
+```bash
+# View all resources
+kubectl get all
 
-This avoids browser CORS issues.
+# View detailed information
+kubectl describe pod <pod-name>
+kubectl describe service <service-name>
+kubectl describe deployment <deployment-name>
+```
 
-No separate backend browser access is required for normal usage.
+---
 
-## 13. Verify MongoDB Persistence
+## Production Deployment (Argo CD)
 
-MongoDB uses a PersistentVolumeClaim:
+### What is Argo CD?
 
-mongo-pvc
+Argo CD is a declarative GitOps continuous delivery tool that automatically synchronizes your Kubernetes cluster with your Git repository.
 
-To verify persistence:
+### Prerequisites
 
-Create a new measurement result
+- Access to a Kubernetes cluster (cloud provider or on-premises)
+- kubectl access to the cluster
+- GitHub repository access
 
-Delete the MongoDB pod:
+### Step 1: Install Argo CD
 
-kubectl delete pod -l app=mongo
-Wait for Kubernetes to recreate the pod
-Refresh the frontend
-Verify that the created data is still present
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
 
-This confirms persistent storage is working.
+Wait for all Argo CD components to be ready:
 
-## 14. Useful Verification Commands
+```bash
+kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+```
 
-Check pods:
+### Step 2: Access Argo CD UI
 
+Get the initial admin password:
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+Port-forward to Argo CD server:
+
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+Open: https://localhost:8080
+
+Log in with:
+- Username: `admin`
+- Password: (from previous command)
+
+### Step 3: Create Argo CD Application
+
+Apply the Argo CD application manifest:
+
+```bash
+kubectl apply -f k8s/argocd-application.yaml
+```
+
+### Step 4: Verify Application Sync
+
+In Argo CD UI:
+
+1. Navigate to Applications
+2. Click on "measurement-results-app"
+3. Verify all components are "Synced"
+4. Check the application topology
+
+### Step 5: Deploy Application
+
+The application will auto-sync based on the Git repository. To manually trigger sync:
+
+```bash
+argocd app sync measurement-results-app
+```
+
+### How It Works
+
+1. **Git as Source of Truth**: All Kubernetes manifests are stored in git (`k8s/` folder)
+2. **Automatic Sync**: Argo CD continuously monitors the repository and automatically applies changes
+3. **Self-Healing**: If cluster state drifts from Git, Argo CD automatically corrects it
+4. **Pruning**: Deleted resources in Git are automatically removed from the cluster
+
+### Access Application
+
+```bash
+kubectl port-forward service/frontend 8080:80
+```
+
+Open: http://localhost:8080
+
+---
+
+## Advanced Configuration
+
+### Environment Variables
+
+#### Backend Configuration
+
+Located in `backend-api/CertificateStore.Api/appsettings.json`:
+
+```json
+{
+  "MongoDbSettings": {
+    "ConnectionString": "mongodb://mongo:27017"
+  }
+}
+```
+
+For Kubernetes deployments, modify the Deployment manifest to pass environment variables:
+
+```yaml
+env:
+  - name: MongoDbSettings__ConnectionString
+    value: "mongodb://mongo-mongodb:27017"
+```
+
+### Database Backup
+
+#### Using MongoDB Tools
+
+```bash
+# Export data
+kubectl exec -it <mongo-pod-name> -- mongodump --out /tmp/backup
+
+# Copy from pod
+kubectl cp <mongo-pod-name>:/tmp/backup ./local-backup
+```
+
+#### Using Persistent Volume Snapshots
+
+In production, use cloud provider snapshots:
+- **AWS**: EBS Snapshots
+- **Azure**: Managed Disk Snapshots
+- **GCP**: Persistent Disk Snapshots
+
+### Scaling
+
+#### Scale Backend Replicas
+
+```bash
+kubectl scale deployment backend --replicas=3
+```
+
+#### Scale Frontend Replicas
+
+```bash
+kubectl scale deployment frontend --replicas=2
+```
+
+### Resource Limits
+
+Edit deployment manifests to add resource requests and limits:
+
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+```
+
+---
+
+## CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+Defined in `.github/workflows/docker.yml`:
+
+**Triggers**: Automatically runs on push to `main` branch
+
+**Steps**:
+1. Checkout repository
+2. Log in to GitHub Container Registry (GHCR)
+3. Build backend image
+4. Push backend image to GHCR
+5. Build frontend image
+6. Push frontend image to GHCR
+
+### Image Naming Convention
+
+Images are tagged with:
+- `latest` - Current production version
+- `<git-commit-sha>` - Specific version
+
+### Manual Image Builds
+
+Build locally and push to GHCR:
+
+```bash
+# Backend
+docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest ./backend-api/CertificateStore.Api
+docker push ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest
+
+# Frontend
+docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest ./frontend/certificate-store-frontend
+docker push ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest
+```
+
+---
+
+## Monitoring & Troubleshooting
+
+### Check Pod Status
+
+```bash
+# All pods
 kubectl get pods
 
-Check services:
+# Specific pod logs
+kubectl logs <pod-name>
 
+# Real-time logs
+kubectl logs -f <pod-name>
+
+# Previous pod logs (if crashed)
+kubectl logs <pod-name> --previous
+```
+
+### Check Services
+
+```bash
+# All services
 kubectl get services
 
-Check PVC:
+# Service details
+kubectl describe service <service-name>
 
-kubectl get pvc
+# Service endpoints
+kubectl get endpoints <service-name>
+```
 
-Check Argo CD applications:
+### Common Issues & Solutions
 
-kubectl get applications -n argocd
+#### Frontend Not Loading
 
-Check backend logs:
+**Problem**: 404 error or blank page
 
-kubectl logs deployment/backend
+**Solutions**:
+1. Check frontend pod is running: `kubectl get pods -l app=frontend`
+2. Check logs: `kubectl logs -l app=frontend`
+3. Verify service is exposed: `kubectl get svc frontend`
+4. Port-forward and retry: `kubectl port-forward svc/frontend 8080:80`
 
-Check frontend logs:
+#### Backend API Connection Failed
 
-kubectl logs deployment/frontend
+**Problem**: API errors or network timeouts
 
-Check MongoDB logs:
+**Solutions**:
+1. Check backend pod: `kubectl get pods -l app=backend`
+2. Check MongoDB connection in backend logs: `kubectl logs -l app=backend`
+3. Verify MongoDB is running: `kubectl get pods -l app=mongo`
+4. Check network connectivity: `kubectl exec -it <backend-pod> -- ping mongo`
 
-kubectl logs deployment/mongo
+#### MongoDB Not Available
 
-## 15. Troubleshooting
-Frontend opens but no data appears
-verify backend pod is running
-verify frontend nginx proxy is configured correctly
-verify MongoDB pod is running
-Argo CD application not syncing
-check kubectl get applications -n argocd
-inspect Argo CD UI for manifest errors
-Data disappears after Mongo restart
-verify mongo-pvc exists
-verify PVC status is Bound
-Frontend not accessible
+**Problem**: Database connection errors
 
-restart port-forward:
+**Solutions**:
+1. Check MongoDB pod: `kubectl get pods -l app=mongo`
+2. Check MongoDB logs: `kubectl logs -l app=mongo`
+3. Verify PVC is bound: `kubectl get pvc`
+4. Check disk space: `kubectl describe pvc mongo-pvc`
 
-kubectl port-forward service/frontend 8080:80
+#### Argo CD Out of Sync
 
-## 16. Notes
+**Problem**: Argo CD shows "OutOfSync" status
 
-This deployment guide is for a local Kubernetes environment.
+**Solutions**:
+1. Check Git repository for uncommitted changes
+2. Force sync: `argocd app sync measurement-results-app --force`
+3. Hard refresh: `argocd app sync measurement-results-app --hard-refresh`
 
-For production deployment, additional components would typically be needed, such as:
+### Useful Debug Commands
 
-Ingress
-DNS / domain name
-TLS certificates
-secret management
-production-grade storage class
+```bash
+# Describe pod for events
+kubectl describe pod <pod-name>
+
+# Execute command in pod
+kubectl exec -it <pod-name> -- /bin/bash
+
+# Port-forward for direct access
+kubectl port-forward pod/<pod-name> 8080:8080
+
+# View resource usage
+kubectl top pods
+kubectl top nodes
+
+# View events
+kubectl get events --sort-by='.lastTimestamp'
+
+# Run a debug pod
+kubectl run -it debug -- /bin/bash --image=ubuntu:latest
+```
+
+### Health Checks
+
+To verify all components are healthy:
+
+```bash
+# Frontend health
+curl http://localhost:4200/
+
+# Backend health (add health endpoint if available)
+curl http://localhost:5202/api/health
+
+# MongoDB health
+kubectl exec -it <mongo-pod> -- mongosh --eval "db.adminCommand('ping')"
+```
+
+---
+
+## Cleanup
+
+### Remove Local Deployment (Docker Compose)
+
+```bash
+docker compose down -v  # -v removes volumes too
+```
+
+### Remove Kubernetes Deployment
+
+```bash
+# Remove all manifests
+kubectl delete -f k8s/
+
+# Remove namespace (if created)
+kubectl delete namespace measurement-results
+```
+
+### Remove Argo CD
+
+```bash
+kubectl delete namespace argocd
+```
+
+---
+
+## Summary
+
+| Environment | Command | Scale |
+|---|---|---|
+| **Development** | `docker compose up -d` | Single machine |
+| **Local K8s** | `kubectl apply -f k8s/` | Local Kubernetes |
+| **Production** | `kubectl apply -f k8s/argocd-application.yaml` | Cloud/On-prem K8s |
+
+For questions or issues, refer to the component documentation or logs using `kubectl logs`.

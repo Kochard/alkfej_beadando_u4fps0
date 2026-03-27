@@ -1,141 +1,101 @@
-# Measurement Results Application - User Guide
+# User Guide - Measurement Results System
 
 ## 1. Purpose
 
-This application is used to store, manage, and evaluate measurement results of manufactured parts.  
-Users can create, view, edit, and delete measurement records through a web interface.
+Measurements Results System provides an end-user experience for managing part measurement data.
+Users can add, review, update, and delete measurement results in a simple UI.
 
----
+## 2. Deployment assumptions
 
-## 2. Main Features
+- Frontend is available at `http://localhost:8080`
+- Backend API is available at `http://localhost:8080/api` (proxy setting in frontend)
+- MongoDB is connected through the backend
+- MCP service is available at `http://localhost:8081` (optional)
 
-- Create new measurement results
-- View measurement results with pagination
-- Edit existing measurement data
-- Delete measurement records
-- Automatic status evaluation (PASS / NG)
+## 3. Core user workflow
 
----
+### 3.1 View results
 
-## 3. Application Structure
+- Open the app in browser
+- Navigate to "Measurement Results"
+- Observe the table of records
+- Use pagination buttons: First, Prev, Next, Last
 
-The system consists of:
+### 3.2 Create result
 
-- Frontend: Angular web application
-- Backend: ASP.NET REST API
-- Database: MongoDB
+1. Click "Create" or "New measurement".
+2. Fill required fields: Part Name, Serial Number, Measurement Type, Measured Value, Lower/Upper Limit.
+3. Optional: Unit, Measured By, Measured At, Notes.
+4. Submit.
+5. Confirm the new row appears in page 1.
 
-All data is stored persistently in the database.
+### 3.3 Edit result
 
----
+1. Click "Edit" on a row.
+2. Update fields in the form.
+3. Save changes.
+4. Confirm table updates values.
 
-## 4. Navigation
+### 3.4 Delete result
 
-### Home Page
-Landing page of the application.
+1. Click "Delete" on a row.
+2. Confirm deletion.
+3. Confirm row disappears.
 
-### Measurement Results Page
-Main working page of the system.
+## 4. Business logic
 
-Displays stored measurement results with detailed information.
+- Status is computed automatically:
+  - PASS when `Lower Limit <= Measured Value <= Upper Limit`
+  - NG otherwise
+- This is shown as status in the list
 
----
+## 5. Pagination UI
 
-## 5. Measurement Data Fields
+The list displays paged data with
+- current page
+- total pages
+- total record count
+- first/prev/next/last controls
 
-Each measurement record contains:
+## 6. MCP endpoints (optional)
 
-- Part Name
-- Serial Number
-- Measurement Type
-- Measured Value
-- Unit
-- Lower Limit
-- Upper Limit
-- Status (PASS / NG)
-- Measured By
-- Measured At (timestamp)
-- Notes
+If MCP is deployed and port-forwarded:
+- `GET /api/mcp/health` → service health
+- `GET /api/mcp/stats` → total/pass/fail counts
+- `GET /api/mcp/latest` → latest measurements
 
----
+## 7. Troubleshooting
 
-## 6. Status Logic
+### A. List not loading
 
-The system automatically evaluates the measurement:
+- Check network call in browser dev tools
+- Ensure backend is running (`kubectl get pods -l app=backend`)
+- Ensure Mongo is running (`kubectl get pods -l app=mongo`)
 
-- PASS → value is within limits
-- NG → value is outside limits
+### B. Create/edit fails
 
-Users do not manually set the status.
+- Check required fields are not empty
+- Ensure measured value and limits are numeric
+- Check backend API logs: `kubectl logs deployment/backend`
 
----
+### C. MCP unreachable
 
-## 7. Pagination
+- Check MCP pod: `kubectl get pods -l app=mcp`
+- Ensure MCP service exists: `kubectl get svc mcp`
 
-- The system displays one result per page
-- Navigation buttons:
+## 8. Quick validation commands
 
-| Button | Function |
-|------|--------|
-| << | Jump to first page |
-| Previous | Go to previous page |
-| Next | Go to next page |
-| >> | Jump to last page |
+- `kubectl get pods`
+- `kubectl get svc`
+- `kubectl get deployments`
+- `kubectl logs deployment/backend`
+- `kubectl logs deployment/frontend`
+- `kubectl logs deployment/mcp`
 
-The number of pages depends on the total number of stored results.
+## 9. Support links
 
----
+- Deployment reference: `docs/DEPLOYMENT-GUIDE.md`
+- API tests: `requests/certificate-store.http`
+- Bugs/features: GitHub issues
 
-## 8. Create New Measurement
 
-1. Click: Creat New Measurement
-2. Fill in all required fields
-3. Click **Submit**
-
-Result:
-- The measurement is saved
-- User is redirected to the first page
-- The new record appears as the newest entry
-
----
-
-## 9. Edit Measurement
-
-1. Click **Edit** on a measurement result
-2. Existing data is automatically loaded into the form
-3. Modify the desired fields
-4. Click **Save**
-
-Result:
-- Changes are saved
-- User remains on the same page
-
-To cancel editing:
-- Click **Cancel**
-- No changes are saved
-
----
-
-## 10. Delete Measurement
-
-1. Click **Delete**
-2. Confirm the popup
-
-Result:
-- Record is permanently removed
-- Page updates automatically
-
----
-
-## 11. Data Persistence
-
-- All data is stored in MongoDB
-- Data remains available after application restart
-
----
-
-## 12. Notes
-
-- The system validates and processes all data through the backend API
-- Frontend communicates with backend via HTTP requests
-- Pagination and filtering are handled by the backend
