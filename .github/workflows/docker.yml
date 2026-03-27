@@ -31,7 +31,13 @@ jobs:
         run: |
           docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest ./backend-api/CertificateStore.Api
           docker push ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest
+
       - name: Build and push frontend image
         run: |
           docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest ./frontend/certificate-store-frontend
           docker push ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest
+
+      - name: Build and push MCP image
+        run: |
+          docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest ./backend-api/CertificateStore.Mcp
+          docker push ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest
