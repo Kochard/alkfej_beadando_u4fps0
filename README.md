@@ -1,8 +1,8 @@
-# Certificate Store Application
+# Measurement Results Application
 
 ## Overview
 
-A full-stack certificate management application with end-to-end deployment pipeline for storing and managing measurement results/certificates.
+A full-stack measurement results management application with end-to-end deployment pipeline for storing and managing measurement data.
 
 **Tech Stack:**
 - **Frontend:** Angular
@@ -19,7 +19,7 @@ A full-stack certificate management application with end-to-end deployment pipel
 
 ## Features
 
-- ✅ Create, read, update, and delete measurement results/certificates
+- ✅ Create, read, update, and delete measurement results
 - ✅ Paginated list view with filtering
 - ✅ RESTful API endpoints
 - ✅ Persistent storage with MongoDB
