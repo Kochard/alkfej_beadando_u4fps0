@@ -1,52 +1,128 @@
-# Measurement Results Application
+# Certificate Store Application
 
 ## Overview
 
-Full-stack application with end-to-end deployment pipeline.
+A full-stack certificate management application with end-to-end deployment pipeline for storing and managing measurement results/certificates.
 
-Stack:
-
-- Frontend: Angular
-- Backend: ASP.NET Web API
-- Database: MongoDB
-- Containerization: Docker
-- CI: GitHub Actions
-- Registry: GitHub Container Registry (GHCR)
-- Deployment: Kubernetes
-- CD: Argo CD
+**Tech Stack:**
+- **Frontend:** Angular
+- **Backend:** ASP.NET Core Web API (.NET 10)
+- **MCP Server:** ASP.NET Core service for model context protocol
+- **Database:** MongoDB
+- **Containerization:** Docker
+- **CI/CD:** GitHub Actions
+- **Container Registry:** GitHub Container Registry (GHCR)
+- **Orchestration:** Kubernetes
+- **GitOps:** Argo CD
 
 ---
 
 ## Features
 
-- Create measurement results
-- Edit measurement results
-- Delete measurement results
-- Paginated list view
-- RESTful API
-- Persistent storage (MongoDB)
+- ✅ Create, read, update, and delete measurement results/certificates
+- ✅ Paginated list view with filtering
+- ✅ RESTful API endpoints
+- ✅ Persistent storage with MongoDB
+- ✅ Containerized deployment
+- ✅ Automated CI/CD pipeline
+- ✅ Kubernetes deployment with Argo CD
+- ✅ MCP (Model Context Protocol) integration
 
 ---
 
 ## Architecture
 
-Frontend → Nginx → Backend → MongoDB
+```
+Frontend (Angular + Nginx) → Backend API (.NET) → MongoDB
+                                      ↓
+                               MCP Server (.NET)
+```
 
-- Frontend served by Nginx
-- Nginx proxies `/api` requests to backend
-- Backend communicates with MongoDB
-- MongoDB uses PersistentVolumeClaim in Kubernetes
+- **Frontend:** Served by Nginx with Angular SPA
+- **Backend API:** RESTful API handling CRUD operations
+- **MCP Server:** Additional service for model context protocol functionality
+- **Database:** MongoDB with persistent volume claims
+- **Deployment:** Kubernetes with Argo CD for GitOps
 
 ---
 
 ## Repository Structure
 
-- `frontend/` → Angular app
-- `backend-api/` → .NET API
-- `k8s/` → Kubernetes manifests
-- `docs/` → user and deployment guides
+```
+├── backend-api/                 # .NET backend services
+│   ├── CertificateStore.Api/    # Main Web API
+│   └── CertificateStore.Mcp/    # MCP server
+├── frontend/                    # Angular frontend
+│   └── certificate-store-frontend/
+├── k8s/                        # Kubernetes manifests
+├── docs/                       # Documentation
+│   ├── DEPLOYMENT-GUIDE.md
+│   └── USER-GUIDE.md
+├── docker-compose.yml          # Local development
+├── mcp-server/                 # MCP server directory
+└── requests/                   # API test requests
+```
 
 ---
+
+## Quick Start
+
+### Prerequisites
+- Docker & Docker Compose
+- .NET 10 SDK
+- Node.js 20+
+- kubectl (for Kubernetes deployment)
+
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Kochard/alkfej_beadando_u4fps0.git
+   cd alkfej_beadando_u4fps0
+   ```
+
+2. **Start services with Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Access the application**
+   - Frontend: http://localhost:4200
+   - Backend API: http://localhost:5000
+   - MongoDB: localhost:27017
+
+### API Endpoints
+
+- `GET /api/measurementresults` - List results (paginated)
+- `POST /api/measurementresults` - Create new result
+- `PUT /api/measurementresults/{id}` - Update result
+- `DELETE /api/measurementresults/{id}` - Delete result
+
+---
+
+## Deployment
+
+See [DEPLOYMENT-GUIDE.md](docs/DEPLOYMENT-GUIDE.md) for detailed Kubernetes deployment instructions.
+
+## Usage
+
+See [USER-GUIDE.md](docs/USER-GUIDE.md) for application usage instructions.
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests
+5. Submit a pull request
+
+---
+
+## License
+
+This project is licensed under the MIT License.
 
 ## Docker Images
 
