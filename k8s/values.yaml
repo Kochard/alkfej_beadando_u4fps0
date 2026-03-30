@@ -1,0 +1,46 @@
+# Default values for measurement-results-system.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  imageRegistry: "ghcr.io/kochard"
+  imageTag: "latest"
+
+# Frontend settings
+frontend:
+  image: "ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest"
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 80
+
+# Backend settings
+backend:
+  image: "ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest"
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8080
+  env:
+    MongoDb__ConnectionString: "mongodb://admin:password@mongodb:27017"
+    MongoDb__DatabaseName: "measurementdb"
+
+# MCP settings
+mcp:
+  image: "ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest"
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8081
+
+# MongoDB subchart settings
+mongodb:
+  enabled: true
+  image:
+    repository: mongo
+    tag: "8.0"
+  service:
+    port: 27017
+  persistence:
+    size: 8Gi

@@ -32,15 +32,29 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Build and push backend image
-        run: |
-          docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest ./backend-api/CertificateStore.Api
-          docker push ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend-api/CertificateStore.Api
+          push: true
+          tags: ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Build and push frontend image
-        run: |
-          docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest ./frontend/certificate-store-frontend
-          docker push ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend/certificate-store-frontend
+          push: true
+          tags: ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Build and push MCP image
-        run: |
-          docker build -t ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest ./backend-api/CertificateStore.Mcp
-          docker push ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend-api/CertificateStore.Mcp
+          push: true
+          tags: ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
         

@@ -13,6 +13,7 @@ A full-stack measurement results management application with end-to-end deployme
 - **CI/CD:** GitHub Actions
 - **Container Registry:** GitHub Container Registry (GHCR)
 - **Orchestration:** Kubernetes
+- **Package Management:** Helm
 - **GitOps:** Argo CD
 
 ---
@@ -25,7 +26,8 @@ A full-stack measurement results management application with end-to-end deployme
 - ✅ Persistent storage with MongoDB
 - ✅ Containerized deployment
 - ✅ Automated CI/CD pipeline
-- ✅ Kubernetes deployment with Argo CD
+- ✅ Kubernetes deployment with Helm charts
+- ✅ GitOps deployment with Argo CD
 - ✅ MCP (Model Context Protocol) integration
 
 ---

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "measurement-results-system.fullname" . }}-mcp
+  labels:
+    {{- include "measurement-results-system.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp
+spec:
+  replicas: {{ .Values.mcp.replicas }}
+  selector:
+    matchLabels:
+      {{- include "measurement-results-system.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mcp
+  template:
+    metadata:
+      labels:
+        {{- include "measurement-results-system.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mcp
+    spec:
+      containers:
+        - name: mcp
+          image: {{ .Values.mcp.image | default (printf "%s/%s:%s" .Values.global.imageRegistry "alkfej_beadando_u4fps0/mcp" .Values.global.imageTag) }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MongoDbSettings__ConnectionString
+              value: {{ .Values.backend.env.MongoDb__ConnectionString | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "measurement-results-system.fullname" . }}-mcp
+  labels:
+    {{- include "measurement-results-system.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp
+spec:
+  type: {{ .Values.mcp.service.type }}
+  selector:
+    {{- include "measurement-results-system.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp
+  ports:
+    - port: {{ .Values.mcp.service.port }}
+      targetPort: 8080

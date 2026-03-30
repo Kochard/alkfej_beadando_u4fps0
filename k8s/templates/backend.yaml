@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "measurement-results-system.fullname" . }}-backend
+  labels:
+    {{- include "measurement-results-system.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      {{- include "measurement-results-system.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "measurement-results-system.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image | default (printf "%s/%s:%s" .Values.global.imageRegistry "alkfej_beadando_u4fps0/backend" .Values.global.imageTag) }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MongoDbSettings__ConnectionString
+              value: {{ .Values.backend.env.MongoDb__ConnectionString | quote }}
+            - name: MongoDbSettings__DatabaseName
+              value: {{ .Values.backend.env.MongoDb__DatabaseName | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "measurement-results-system.fullname" . }}-backend
+  labels:
+    {{- include "measurement-results-system.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  type: {{ .Values.backend.service.type }}
+  selector:
+    {{- include "measurement-results-system.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+  ports:
+    - port: {{ .Values.backend.service.port }}
+      targetPort: 8080

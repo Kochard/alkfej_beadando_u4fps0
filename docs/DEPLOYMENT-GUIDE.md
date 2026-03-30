@@ -307,6 +307,124 @@ kubectl describe deployment <deployment-name>
 
 ---
 
+## Helm Deployment (Local)
+
+### What is Helm?
+
+Helm is a package manager for Kubernetes that simplifies deployment and management of applications. It uses charts (packages) with templated YAML files for customizable, versioned deployments.
+
+### Prerequisites
+
+- Helm installed: `choco install kubernetes-helm` (Windows) or download from https://helm.sh/
+- Kubernetes cluster running (Docker Desktop or other)
+
+### Step 1: Install Helm
+
+Verify Helm installation:
+
+```bash
+helm version
+```
+
+### Step 2: Deploy with Helm
+
+Navigate to the k8s directory:
+
+```bash
+cd k8s
+```
+
+Update dependencies (for MongoDB subchart):
+
+```bash
+helm dependency update
+```
+
+Install the chart:
+
+```bash
+helm install measurement-system .
+```
+
+Or with a custom release name:
+
+```bash
+helm install my-release .
+```
+
+### Step 3: Verify Deployment
+
+Check all resources:
+
+```bash
+helm list
+kubectl get all
+```
+
+Check pod status:
+
+```bash
+kubectl get pods
+kubectl logs -l app.kubernetes.io/name=measurement-results-system
+```
+
+### Step 4: Access Application
+
+Port-forward the frontend service:
+
+```bash
+kubectl port-forward service/my-release-measurement-results-system-frontend 8080:80
+```
+
+Open: http://localhost:8080
+
+### Customization
+
+Override values during installation:
+
+```bash
+helm install my-release . --set frontend.replicas=2 --set mongodb.persistence.size=16Gi
+```
+
+Or create a custom values file:
+
+```bash
+helm install my-release . -f my-values.yaml
+```
+
+### Upgrading
+
+Upgrade the deployment:
+
+```bash
+helm upgrade my-release .
+```
+
+### Uninstalling
+
+Remove the deployment:
+
+```bash
+helm uninstall my-release
+```
+
+### Chart Structure
+
+```
+k8s/
+├── Chart.yaml          # Chart metadata and dependencies
+├── values.yaml         # Default configuration values
+├── templates/          # Kubernetes manifest templates
+│   ├── _helpers.tpl    # Template helpers
+│   ├── frontend.yaml   # Frontend deployment/service
+│   ├── backend.yaml    # Backend deployment/service
+│   └── mcp.yaml        # MCP deployment/service
+└── charts/             # Subcharts
+    └── mongodb/        # MongoDB subchart
+```
+
+---
+
 ## Production Deployment (Argo CD)
 
 ### What is Argo CD?
