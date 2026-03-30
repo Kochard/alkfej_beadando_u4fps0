@@ -93,7 +93,8 @@ Frontend (Angular + Nginx) → Main API (ASP.NET) → MongoDB
 
 3. **Access the application**
    - Frontend: http://localhost:4200
-   - Backend API: http://localhost:5000
+   - Backend API: http://localhost:5202
+   - MCP Service: http://localhost:8081
    - MongoDB: localhost:27017
 
 ### API Endpoints
@@ -139,13 +140,16 @@ Stored in GHCR:
 - Frontend  
   `ghcr.io/kochard/alkfej_beadando_u4fps0/frontend:latest`
 
+- MCP  
+  `ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest`
+
 ---
 
 ## CI Pipeline
 
 GitHub Actions:
 
-- builds frontend and backend images
+- builds frontend, backend, and MCP images
 - pushes images to GHCR
 - runs automatically on push to `main`
 

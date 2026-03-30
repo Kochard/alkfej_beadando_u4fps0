@@ -59,10 +59,13 @@ The list displays paged data with
 
 ## 6. MCP endpoints (optional)
 
-If MCP is deployed and port-forwarded:
-- `GET /api/mcp/health` → service health
-- `GET /api/mcp/stats` → total/pass/fail counts
-- `GET /api/mcp/latest` → latest measurements
+If MCP is deployed and port-forwarded (default: http://localhost:8081):
+- `GET /api/mcp/health` → service health status
+- `GET /api/mcp/stats` → total/pass/fail counts and pass rate
+- `GET /api/mcp/latest` → most recent measurements (default: last 5)
+- `GET /api/mcp/insights` → measurement type distribution, top parts, recent trends
+- `GET /api/mcp/anomalies` → measurements outside their limits, ranked by deviation
+- `GET /api/mcp/predict/{partName}` → quality prediction for a specific part based on history
 
 ## 7. Troubleshooting
 

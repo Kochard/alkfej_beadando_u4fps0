@@ -1,6 +1,58 @@
 @CertificateStore.Api_HostAddress = http://localhost:5202
 
-GET {{CertificateStore.Api_HostAddress}}/weatherforecast/
+### Get all measurement results (paginated)
+GET {{CertificateStore.Api_HostAddress}}/api/MeasurementResults?pageNumber=1&pageSize=10
 Accept: application/json
+
+###
+
+### Get measurement result by ID
+GET {{CertificateStore.Api_HostAddress}}/api/MeasurementResults/REPLACE_WITH_ID
+Accept: application/json
+
+###
+
+### Create measurement result
+POST {{CertificateStore.Api_HostAddress}}/api/MeasurementResults
+Content-Type: application/json
+
+{
+  "partName": "Rear Cover",
+  "serialNumber": "SN-10001",
+  "measurementType": "Length",
+  "measuredValue": 125.4,
+  "unit": "mm",
+  "lowerLimit": 120.0,
+  "upperLimit": 130.0,
+  "status": "PASS",
+  "measuredBy": "Operator A",
+  "measuredAt": "2026-03-30T08:30:00Z",
+  "notes": "Initial sample result"
+}
+
+###
+
+### Update measurement result
+PUT {{CertificateStore.Api_HostAddress}}/api/MeasurementResults/REPLACE_WITH_ID
+Content-Type: application/json
+
+{
+  "partName": "Rear Cover",
+  "serialNumber": "SN-10001",
+  "measurementType": "Length",
+  "measuredValue": 118.9,
+  "unit": "mm",
+  "lowerLimit": 120.0,
+  "upperLimit": 130.0,
+  "status": "FAIL",
+  "measuredBy": "Operator B",
+  "measuredAt": "2026-03-30T09:15:00Z",
+  "notes": "Updated after recheck"
+}
+
+###
+
+### Delete measurement result
+DELETE {{CertificateStore.Api_HostAddress}}/api/MeasurementResults/REPLACE_WITH_ID
 
 ###
