@@ -166,5 +166,5 @@ public class MeasurementResultsController : ControllerBase
             timestamp = DateTime.UtcNow,
             version = "1.0.0"
         });
-    }
+    } // Force rebuild
 }

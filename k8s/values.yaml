@@ -23,7 +23,7 @@ backend:
     type: ClusterIP
     port: 8080
   env:
-    MongoDb__ConnectionString: "mongodb://admin:password@mongodb:27017"
+    MongoDb__ConnectionString: "mongodb://admin:password@measurement-system-mongodb:27017"
     MongoDb__DatabaseName: "measurementdb"
     McpService__Url: "http://mcp-service:8081"
 
@@ -36,7 +36,7 @@ mcp:
     port: 8081
     name: "mcp-service"  # Service name for inter-service communication
   env:
-    MongoDb__ConnectionString: "mongodb://admin:password@mongodb:27017"
+    MongoDb__ConnectionString: "mongodb://admin:password@measurement-demo-mongodb:27017"
     MongoDb__DatabaseName: "measurementdb"
 
 # MongoDB subchart settings
