@@ -25,12 +25,14 @@ spec:
             - containerPort: 8080
           env:
             - name: MongoDbSettings__ConnectionString
-              value: {{ .Values.backend.env.MongoDb__ConnectionString | quote }}
+              value: {{ .Values.mcp.env.MongoDb__ConnectionString | quote }}
+            - name: MongoDbSettings__DatabaseName
+              value: {{ .Values.mcp.env.MongoDb__DatabaseName | quote }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "measurement-results-system.fullname" . }}-mcp
+  name: {{ .Values.mcp.service.name | default (printf "%s-mcp" (include "measurement-results-system.fullname" .)) }}
   labels:
     {{- include "measurement-results-system.labels" . | nindent 4 }}
     app.kubernetes.io/component: mcp

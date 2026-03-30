@@ -10,10 +10,14 @@ namespace CertificateStore.Api.Controllers;
 public class MeasurementResultsController : ControllerBase
 {
     private readonly IMeasurementResultService _measurementResultService;
+    private readonly IMcpService _mcpService;
 
-    public MeasurementResultsController(IMeasurementResultService measurementResultService)
+    public MeasurementResultsController(
+        IMeasurementResultService measurementResultService,
+        IMcpService mcpService)
     {
         _measurementResultService = measurementResultService;
+        _mcpService = mcpService;
     }
 
     [HttpGet]
@@ -103,5 +107,64 @@ public class MeasurementResultsController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    // MCP Integration Endpoints
+
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboard()
+    {
+        var stats = await _mcpService.GetStatsAsync();
+        var insights = await _mcpService.GetInsightsAsync();
+        var latest = await _mcpService.GetLatestAsync(10);
+
+        return Ok(new
+        {
+            stats = stats,
+            insights = insights,
+            latestResults = latest,
+            generatedAt = DateTime.UtcNow
+        });
+    }
+
+    [HttpGet("analytics")]
+    public async Task<IActionResult> GetAnalytics()
+    {
+        var insights = await _mcpService.GetInsightsAsync();
+        var anomalies = await _mcpService.GetAnomaliesAsync();
+
+        return Ok(new
+        {
+            insights = insights,
+            anomalies = anomalies,
+            generatedAt = DateTime.UtcNow
+        });
+    }
+
+    [HttpGet("predict/{partName}")]
+    public async Task<IActionResult> Predict(string partName)
+    {
+        var prediction = await _mcpService.PredictAsync(partName);
+        if (prediction == null)
+        {
+            return NotFound(new { message = $"No prediction data available for part: {partName}" });
+        }
+
+        return Ok(prediction);
+    }
+
+    [HttpGet("health")]
+    public async Task<IActionResult> Health()
+    {
+        var mcpHealth = await _mcpService.GetStatsAsync() != null;
+
+        return Ok(new
+        {
+            service = "CertificateStore.Api",
+            status = "OK",
+            mcpIntegration = mcpHealth ? "Connected" : "Disconnected",
+            timestamp = DateTime.UtcNow,
+            version = "1.0.0"
+        });
     }
 }

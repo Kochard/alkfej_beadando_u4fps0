@@ -28,9 +28,23 @@ This project is a full-stack containerized system for managing measurement resul
 ### System Components
 
 - **frontend** - Angular application served via Nginx
-- **backend** - ASP.NET Core REST API
-- **mcp** - Additional backend service  
+- **backend** - ASP.NET Core REST API (Main API service)
+- **mcp** - Independent MCP microservice for analytics and insights
 - **mongo** - MongoDB database with persistent storage
+
+### Architecture Overview
+
+```
+Frontend (Angular) → Main API (.NET) → MongoDB
+                      ↓
+               MCP Microservice (.NET) → MongoDB
+```
+
+The system follows a **microservice architecture** where:
+- **Main API**: Handles primary CRUD operations for measurement results
+- **MCP Microservice**: Independent backend component providing advanced analytics, predictions, and insights
+- **Shared Database**: Both services access the same MongoDB instance
+- **Service Discovery**: Services communicate via Kubernetes DNS
 
 ### Repository Structure
 
@@ -287,11 +301,21 @@ The frontend service is configured as NodePort (port 30007), accessible at:
 http://localhost:30007
 ```
 
-### Deploy MCP Service (Optional)
+### Deploy MCP Service (Independent Microservice)
+
+The MCP (Model Context Protocol) service is an independent microservice that provides advanced analytics and insights:
 
 ```bash
 kubectl apply -f k8s/mcp-deployment.yaml
 ```
+
+MCP Service provides:
+- **Analytics**: Statistics, trends, and insights
+- **Predictions**: Quality predictions based on historical data
+- **Anomaly Detection**: Identification of measurements outside normal ranges
+- **Health Monitoring**: Service health and status information
+
+Access MCP service at: `http://localhost:8081/api/mcp/`
 
 ### View All Resources
 
@@ -417,11 +441,19 @@ k8s/
 ├── templates/          # Kubernetes manifest templates
 │   ├── _helpers.tpl    # Template helpers
 │   ├── frontend.yaml   # Frontend deployment/service
-│   ├── backend.yaml    # Backend deployment/service
-│   └── mcp.yaml        # MCP deployment/service
+│   ├── backend.yaml    # Main API deployment/service
+│   └── mcp.yaml        # MCP microservice deployment/service
 └── charts/             # Subcharts
     └── mongodb/        # MongoDB subchart
 ```
+
+### Microservice Architecture
+
+The Helm chart deploys a **microservice architecture** with:
+- **Main API Service**: Primary CRUD operations
+- **MCP Microservice**: Independent analytics and insights service
+- **Shared Database**: MongoDB accessed by both services
+- **Service Discovery**: Automatic DNS-based service communication
 
 ---
 

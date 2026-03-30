@@ -27,7 +27,8 @@ A full-stack measurement results management application with end-to-end deployme
 - ✅ Containerized deployment
 - ✅ Automated CI/CD pipeline
 - ✅ Kubernetes deployment with Helm charts
-- ✅ GitOps deployment with Argo CD
+- ✅ **Microservice architecture with independent MCP component**
+- ✅ **Advanced analytics and predictions via MCP microservice**
 - ✅ MCP (Model Context Protocol) integration
 
 ---
@@ -35,15 +36,17 @@ A full-stack measurement results management application with end-to-end deployme
 ## Architecture
 
 ```
-Frontend (Angular + Nginx) → Backend API (.NET) → MongoDB
-                                      ↓
-                               MCP Server (.NET)
+Frontend (Angular + Nginx) → Main API (ASP.NET) → MongoDB
+                              ↓
+                       MCP Microservice (ASP.NET)
+                              ↓
+                           MongoDB (Shared)
 ```
 
-- **Frontend:** Served by Nginx with Angular SPA
-- **Backend API:** RESTful API handling CRUD operations
-- **MCP Server:** Additional service for model context protocol functionality
-- **Database:** MongoDB with persistent volume claims
+- **Frontend:** Angular SPA served by Nginx
+- **Main API:** Primary REST API for CRUD operations on measurement results
+- **MCP Microservice:** Independent backend component providing analytics, insights, and predictions
+- **Database:** Shared MongoDB instance for both services
 - **Deployment:** Kubernetes with Argo CD for GitOps
 
 ---

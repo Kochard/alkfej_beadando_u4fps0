@@ -15,7 +15,7 @@ frontend:
     type: ClusterIP
     port: 80
 
-# Backend settings
+# Main API Backend settings
 backend:
   image: "ghcr.io/kochard/alkfej_beadando_u4fps0/backend:latest"
   replicas: 1
@@ -25,14 +25,19 @@ backend:
   env:
     MongoDb__ConnectionString: "mongodb://admin:password@mongodb:27017"
     MongoDb__DatabaseName: "measurementdb"
+    McpService__Url: "http://measurement-system-measurement-results-system-mcp:8081"
 
-# MCP settings
+# MCP Microservice settings (Independent backend component)
 mcp:
   image: "ghcr.io/kochard/alkfej_beadando_u4fps0/mcp:latest"
   replicas: 1
   service:
     type: ClusterIP
     port: 8081
+    name: "mcp-service"  # Service name for inter-service communication
+  env:
+    MongoDb__ConnectionString: "mongodb://admin:password@mongodb:27017"
+    MongoDb__DatabaseName: "measurementdb"
 
 # MongoDB subchart settings
 mongodb:

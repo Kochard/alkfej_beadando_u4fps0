@@ -28,6 +28,8 @@ spec:
               value: {{ .Values.backend.env.MongoDb__ConnectionString | quote }}
             - name: MongoDbSettings__DatabaseName
               value: {{ .Values.backend.env.MongoDb__DatabaseName | quote }}
+            - name: McpService__Url
+              value: {{ .Values.backend.env.McpService__Url | quote }}
 ---
 apiVersion: v1
 kind: Service
