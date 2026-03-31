@@ -31,7 +31,9 @@ builder.Services.AddSingleton<IMeasurementResultService, MeasurementResultServic
 builder.Services.AddHttpClient<IMcpService, McpService>((serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var mcpUrl = configuration["McpService__Url"] ?? "http://localhost:8081";
+    var mcpUrl = configuration["McpService:Url"]
+        ?? configuration["McpService__Url"]
+        ?? "http://localhost:8081";
     client.BaseAddress = new Uri(mcpUrl);
     client.Timeout = TimeSpan.FromSeconds(30);
 });

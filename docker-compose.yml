@@ -16,9 +16,11 @@ services:
     ports:
       - "5202:8080"
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - MongoDbSettings__ConnectionString=mongodb://mongo:27017
       - MongoDbSettings__DatabaseName=MeasurementResultsDb
       - MongoDbSettings__MeasurementResultsCollectionName=MeasurementResults
+      - McpService__Url=http://mcp:8080
 
   mcp:
     build:
